@@ -1,6 +1,6 @@
-package view;
+package com.collegeeventapp.view;
 
-import controller.LoginController;
+import com.collegeeventapp.controller.LoginController;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -53,8 +53,7 @@ public class LoginFrame extends JFrame {
 
         if (loginController.userLogin(email, password) != null) {
             JOptionPane.showMessageDialog(this, "User Login Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            // NOTE: Replace "test@user.com" with the actual logged-in user's email
-            new DashboardFrame(email, false); 
+            new DashboardFrame(email, false);
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Invalid User Credentials.", "Login Failed", JOptionPane.ERROR_MESSAGE);

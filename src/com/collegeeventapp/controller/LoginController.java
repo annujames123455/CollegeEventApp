@@ -1,9 +1,12 @@
-package controller;
+package com.collegeeventapp.controller;
 
-import dao.UserDAO;
-import dao.AdminDAO;
-import model.User;
-import model.Admin;
+import com.collegeeventapp.dao.UserDAO;
+import com.collegeeventapp.dao.AdminDAO;
+import com.collegeeventapp.model.User;
+import com.collegeeventapp.model.Admin;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
 public class LoginController {
@@ -35,8 +38,8 @@ public class LoginController {
                 return null;
             }
 
-            // Simple password check (replace with secure hashing in production)
-            if (user.getPasswordHash().equals(password)) { 
+            // Verify password securely (supports legacy plain and "$sha256$" hashed passwords)
+            if (verifyPassword(password, user.getPasswordHash())) {
                 System.out.println("User " + user.getName() + " logged in successfully.");
                 return user;
             } else {
@@ -64,8 +67,8 @@ public class LoginController {
                 return null;
             }
 
-            // Simple password check (replace with secure hashing in production)
-            if (admin.getPasswordHash().equals(password)) { 
+            // Verify password securely (supports legacy plain and "$sha256$" hashed passwords)
+            if (verifyPassword(password, admin.getPasswordHash())) {
                 System.out.println("Admin " + admin.getName() + " logged in successfully.");
                 return admin;
             } else {
@@ -76,5 +79,52 @@ public class LoginController {
             System.err.println("Database error during admin login: " + e.getMessage());
             return null;
         }
+    }
+
+    // --- Security helpers ---
+    private static boolean verifyPassword(String rawPassword, String storedValue) {
+        if (storedValue == null || rawPassword == null) {
+            return false;
+        }
+        // If stored as "$sha256$<hex>", compute SHA-256 of raw and compare constant-time
+        final String prefix = "$sha256$";
+        if (storedValue.startsWith(prefix)) {
+            String expectedHex = storedValue.substring(prefix.length());
+            String actualHex = sha256Hex(rawPassword);
+            return constantTimeEquals(expectedHex, actualHex);
+        }
+        // Fallback: legacy plain-text compare, but constant-time to reduce timing leaks
+        return constantTimeEquals(storedValue, rawPassword);
+    }
+
+    private static String sha256Hex(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder(digest.length * 2);
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            // Should never happen on standard JVMs; treat as verification failure
+            return "";
+        }
+    }
+
+    private static boolean constantTimeEquals(String a, String b) {
+        if (a == null || b == null) {
+            return false;
+        }
+        int lenA = a.length();
+        int lenB = b.length();
+        int max = Math.max(lenA, lenB);
+        int result = 0;
+        for (int i = 0; i < max; i++) {
+            char chA = i < lenA ? a.charAt(i) : 0;
+            char chB = i < lenB ? b.charAt(i) : 0;
+            result |= chA ^ chB;
+        }
+        return result == 0 && lenA == lenB;
     }
 }
