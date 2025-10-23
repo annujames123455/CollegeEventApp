@@ -1,6 +1,10 @@
 package com.collegeeventapp.dao;
 
 import com.collegeeventapp.model.Registration;
+
+=======
+import com.collegeeventapp.dao.DBConnection;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,11 +45,13 @@ public class RegistrationDAO {
             stmt.setInt(1, userID);
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
+                    java.sql.Timestamp ts = rs.getTimestamp("registrationDate");
+                    java.time.LocalDateTime registeredAt = ts != null ? ts.toLocalDateTime() : null;
                     registrations.add(new Registration(
                         rs.getInt("registrationID"),
                         rs.getInt("userID"),
                         rs.getInt("eventID"),
-                        rs.getTimestamp("registrationDate").toLocalDateTime()
+                        registeredAt
                     ));
                 }
             }

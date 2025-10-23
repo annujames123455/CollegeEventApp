@@ -6,12 +6,15 @@ import java.sql.SQLException;
 
 public class DBConnection {
     
-    // --- CHANGE THESE TO YOUR ACTUAL DATABASE CREDENTIALS ---
-    // The DB_URL format depends on your database type (e.g., mysql, postgresql)
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/college_events_db"; 
-    private static final String DB_USER = "root"; 
-    private static final String DB_PASSWORD = "your_password"; 
-    // --------------------------------------------------------
+    // Database connection details (use environment variables when available)
+    private static final String DEFAULT_DB_URL = "jdbc:mysql://localhost:3306/college_events_db";
+    private static final String DEFAULT_DB_USER = "root";
+    private static final String DEFAULT_DB_PASSWORD = "";
+
+    private static String envOrDefault(String key, String fallback) {
+        String value = System.getenv(key);
+        return (value == null || value.isEmpty()) ? fallback : value;
+    }
     
     /**
      * Establishes and returns a connection to the database.
@@ -19,8 +22,11 @@ public class DBConnection {
      * @throws SQLException if a database access error occurs or the URL is invalid.
      */
     public static Connection getConnection() throws SQLException {
-        // DriverManager automatically loads the correct JDBC driver if it's in the classpath
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        // Resolve from environment or fall back to defaults
+        String url = envOrDefault("DB_URL", DEFAULT_DB_URL);
+        String user = envOrDefault("DB_USER", DEFAULT_DB_USER);
+        String password = envOrDefault("DB_PASSWORD", DEFAULT_DB_PASSWORD);
+        return DriverManager.getConnection(url, user, password);
     }
 
     /**

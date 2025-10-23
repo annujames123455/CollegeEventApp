@@ -12,6 +12,13 @@ public class Validator {
     private static final Pattern EMAIL_PATTERN = 
         Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 
+    // Minimum password length to avoid weak passwords
+    private static final int MIN_PASSWORD_LENGTH = 8;
+
+    // Basic strong password policy: at least one upper, lower, digit
+    private static final Pattern STRONG_PASSWORD_PATTERN =
+        Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$");
+
     /**
      * Checks if a string is null or empty after trimming whitespace.
      */
@@ -34,7 +41,14 @@ public class Validator {
      * Validates password strength based on minimum length.
      */
     public static boolean isValidPassword(String password) {
-        return password != null && password.length() >= Constants.MIN_PASSWORD_LENGTH;
+        if (password == null) {
+            return false;
+        }
+        if (password.length() < MIN_PASSWORD_LENGTH) {
+            return false;
+        }
+        // Enforce a basic strong policy (upper, lower, digit)
+        return STRONG_PASSWORD_PATTERN.matcher(password).matches();
     }
 
     /**
