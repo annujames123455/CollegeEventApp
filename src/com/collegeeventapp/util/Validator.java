@@ -1,4 +1,4 @@
-package util;
+package com.collegeeventapp.util;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

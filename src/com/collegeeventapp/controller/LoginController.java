@@ -1,9 +1,9 @@
-package controller;
+package com.collegeeventapp.controller;
 
-import dao.UserDAO;
-import dao.AdminDAO;
-import model.User;
-import model.Admin;
+import com.collegeeventapp.dao.UserDAO;
+import com.collegeeventapp.dao.AdminDAO;
+import com.collegeeventapp.model.User;
+import com.collegeeventapp.model.Admin;
 import java.sql.SQLException;
 
 public class LoginController {

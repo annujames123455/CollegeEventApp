@@ -1,6 +1,6 @@
-package dao;
+package com.collegeeventapp.dao;
 
-import model.Registration;
+import com.collegeeventapp.model.Registration;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
