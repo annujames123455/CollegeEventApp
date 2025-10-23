@@ -4,9 +4,12 @@ import com.collegeeventapp.dao.UserDAO;
 import com.collegeeventapp.dao.AdminDAO;
 import com.collegeeventapp.model.User;
 import com.collegeeventapp.model.Admin;
+
+=======
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
 import java.sql.SQLException;
 
 public class LoginController {
